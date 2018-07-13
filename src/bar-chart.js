@@ -29,8 +29,9 @@ dc.barChart = function (parent, chartGroup) {
     var DEFAULT_GAP_BETWEEN_BARS = 2;
     var DEFAULT_GAP_BETWEEN_BAR_GROUPS = 10;
     var LABEL_PADDING = 3;
+    var DEFAULT_SENSOR_BAR = true;
     var DEFAULT_SENSOR_BAR_COLOR = "#fffff";
-    var DEFAULT_SENSOR_BAR_OPACITY = 0;
+    var DEFAULT_SENSOR_BAR_OPACITY = 0.1;
 
     var _chart = dc.stackMixin(dc.coordinateGridMixin({}));
 
@@ -38,6 +39,9 @@ dc.barChart = function (parent, chartGroup) {
     var _groupGap = DEFAULT_GAP_BETWEEN_BAR_GROUPS;
     var _groupBars = false;
     var _centerBar = false;
+    var _sensorBars = DEFAULT_SENSOR_BAR;
+    var _sensorBarColor = DEFAULT_SENSOR_BAR_COLOR;
+    var _sensorBarOpacity = DEFAULT_SENSOR_BAR_OPACITY;
     var _alwaysUseRounding = false;
 
     var _barPadding;
@@ -101,7 +105,8 @@ dc.barChart = function (parent, chartGroup) {
     }
 
     function sensorBarXPos (d) {
-        var x = _chart.x()(d.x);
+        var x = _chart.x()(d.x),
+                offset = 0;
             // nuberOfBarsInGroup = _chart.stack().length,
             // xUnits = _chart.xUnitCount(),
         //     xAxistStepLength,
@@ -133,12 +138,16 @@ dc.barChart = function (parent, chartGroup) {
         if(_chart.isOrdinal()){
             x += _barPadding / 2;
         }
-        if (_centerBar) {
+        if (!_chart.isOrdinal() && _centerBar) {
             x -= _sensorBarWidth / 2;
         }
 
+        if(_chart.isOrdinal() && _groupBars){
+            x += _chart.groupGap() / 2;
+        }
+
         if (d.x == 1 ){
-            // console.log("sensorBarXPos, x = ", x, "_chart.x()(d.x) = ", _chart.x()(d.x), ", d.x = ", d.x, ", _chart.groupGap() = ", _chart.groupGap(), ", offset = ", offset);
+            console.log("sensorBarXPos, x = ", x, "_chart.x()(d.x) = ", _chart.x()(d.x), ", d.x = ", d.x, ", _chart.groupGap() = ", _chart.groupGap(), ", offset = ", offset);
         }
 
         return dc.utils.safeNumber(x);
@@ -270,8 +279,8 @@ dc.barChart = function (parent, chartGroup) {
         var barsEnter = bars.enter()
             .append('rect')
             .attr('class', 'sensor-bar')
-            .attr('fill', DEFAULT_SENSOR_BAR_COLOR)
-            .attr('fill-opacity', DEFAULT_SENSOR_BAR_OPACITY)
+            .attr('fill', _sensorBarColor)
+            .attr('fill-opacity', _sensorBarOpacity)
             .attr('x', sensorBarXPos)
             .attr('y', 0)
             .attr('height', _chart.yAxisHeight())
@@ -583,8 +592,7 @@ dc.barChart = function (parent, chartGroup) {
      * @memberof dc.barChart
      * @instance
      * @param {Boolean} [groupBars=false]
-     * @return {Boolean}
-     * @return {dc.barChart}
+     * @return {Boolean|dc.barChart}
      */
     _chart.groupBars = function (groupBars) {
         // _barWidth = undefined;
@@ -604,14 +612,63 @@ dc.barChart = function (parent, chartGroup) {
      * @memberof dc.barChart
      * @instance
      * @param {Number} [groupGap=5]
-     * @return {Number}
-     * @return {dc.barChart}
+     * @return {Number|dc.barChart}
      */
     _chart.groupGap = function (groupGap) {
         if (!arguments.length) {
             return _groupGap;
         }
         _groupGap = groupGap;
+        return _chart;
+    };
+
+    /**
+     * Set or get whether sensor bars is enabled. Sensor bars is placed behind the normal bars or groups of bars
+     * but has the same height as the chart. This enables selection of bars by hovering or clicking above them
+     * in the chart. Useful for instance when some of the bars are relativly short.
+     * @name sensorBars
+     * @memberof dc.barChart
+     * @instance
+     * @param {Boolean} [sensorBars=true]
+     * @return {Boolean|dc.barChart}
+     */
+    _chart.sensorBars = function (sensorBars) {
+        if (!arguments.length) {
+            return _sensorBars;
+        }
+        _sensorBars = sensorBars;
+        return _chart;
+    };
+   
+     /**
+     * Set or get the fill color of the sensor bars
+     * @name sensorBarColor
+     * @memberof dc.barChart
+     * @instance
+     * @param {String} [sensorBarColor="#fffff"]
+     * @return {String|dc.barChart}
+     */
+    _chart.sensorBarColor = function (sensorBarColor) {
+        if (!arguments.length) {
+            return _sensorBarColor;
+        }
+        _sensorBarColor = sensorBarColor;
+        return _chart;
+    };
+
+     /**
+     * Set or get the fill color of the sensor bars
+     * @name sensorBarOpacity
+     * @memberof dc.barChart
+     * @instance
+     * @param {Number} [sensorBarOpacity=0]
+     * @return {Number|dc.barChart}
+     */
+    _chart.sensorBarOpacity = function (sensorBarOpacity) {
+        if (!arguments.length) {
+            return _sensorBarOpacity;
+        }
+        _sensorBarOpacity = sensorBarOpacity;
         return _chart;
     };
 
