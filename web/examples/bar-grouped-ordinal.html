@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>dc.js - Grouped Bar Example</title>
+    <title>dc.js - Ordinal Grouped Bar Example</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
@@ -72,9 +72,9 @@ d3.csv("morley.csv").then(function(experiments ) {
             .elasticY(true)
             // .margins({ top: 25, right: 25, bottom: 25, left: 50 })
             .groupBars(true)
-            .groupGap(15)
-            .barPadding(0.1)
-            ._outerRangeBandPadding(0.3)
+            // .groupGap(15)
+            // .barPadding(0.1)
+            // ._outerRangeBandPadding(0.3)
             // .centerBar(true)
             .controlsUseVisibility(true)
             .renderLabel(true)

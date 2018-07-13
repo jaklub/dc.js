@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>dc.js - Grouped Bar Example</title>
+    <title>dc.js - Multiple Grouped Bar Example</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
 </head>
 <body>
 
-<div class="container"></div>
+<div class="container">
 <script type="text/javascript" src="header.js"></script>
-
-<div id="chart1">
-    <strong>Ordinal chart</strong>
-    <div class="reset" style="visibility: hidden">selected: <span class="filter"></span>
-        <a href="javascript:chart1.filterAll();dc.redrawAll();">reset</a>
+<div>
+    <div id="chart1">
+        <strong>Ordinal chart</strong>
+        </br><button id="toggleGroupBars" class="btn btn-small" type="button" onclick="toggleGroupBars('chart1')">Toggle</button>
+        <div class="reset" style="visibility: hidden">selected: <span class="filter"></span>
+            <a href="javascript:chart1.filterAll();dc.redrawAll();">reset</a>
+        </div>
     </div>
 </div>
 <div id="chart2">
     <strong>Ordinal chart</strong>
+    </br><button id="toggleGroupBars" class="btn btn-small" type="button" onclick="toggleGroupBars('chart2')">Toggle</button>
     <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
         <a href="javascript:chart2.filterAll();dc.redrawAll();">reset</a>
     </div>
 </div>
 <div id="chart3">
     <strong>Non ordinal chart with centerbar and brush on</strong>
+    </br><button id="toggleGroupBars" class="btn btn-small" type="button" onclick="toggleGroupBars('chart3')">Toggle</button>
     <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
         <a href="javascript:chart3.filterAll();dc.redrawAll();">reset</a>
     </div>
@@ -124,6 +128,7 @@ d3.csv("../crime/crime.csv").then(function(crime) {
         // .ordinalColors(d3.schemeDark2)
         .controlsUseVisibility(true)
         .margins({ top: 15, right: 60, bottom: 100, left: 60 })
+        .sensorBarOpacity(0.1)
 
     for(var i = 1; i < types.length; ++i){
         chart1.stack(chart1Group, types[i] , sel_stack(types[i]));
@@ -178,6 +183,7 @@ d3.csv("../crime/crime.csv").then(function(crime) {
             var val = d.value[measure];
             return  this.layer + " - " + d.key + ": " + val;
         })
+        .sensorBarOpacity(0.1)
 
     for(var i = 1; i < types.length; ++i){
         chart2.stack(chart2Group, types[i] , sel_stack(types[i]));
@@ -220,6 +226,9 @@ d3.csv("../crime/crime.csv").then(function(crime) {
         .yAxisLabel("This is the Y Axis!")
         .elasticY(true)
         .yAxisPadding('5%')
+        //._outerRangeBandPadding(0.5)
+        .barPadding(0.1)
+        // .groupGap(15)
         // .ordinalColors(d3.schemeDark2)
         .controlsUseVisibility(true)
         .title(function(d, i) {
@@ -227,9 +236,10 @@ d3.csv("../crime/crime.csv").then(function(crime) {
             var val = d.value[measure];
             return  this.layer + " - " + d.key + ": " + val;
         })
+        .sensorBarOpacity(0.1)
 
     for(var i = 1; i < types.length; ++i){
-        chart3.stack(chart2Group, types[i] , sel_stack(types[i]));
+        chart3.stack(chart3Group, types[i] , sel_stack(types[i]));
     }
 
     chart3.xAxis().tickFormat(function(v) { return v;});
@@ -240,22 +250,24 @@ d3.csv("../crime/crime.csv").then(function(crime) {
 });
 
 
-function toggleGroupBars(arg1, arg2, arg3){
-    // console.log('toggleGroupBars');
-    var btn = d3.select('#toggleGroupBars');
-    var groupBars = chart.groupBars() ? false : true;
-    // if (groupBars) {
-    //     chart
-    //         .barPadding(0.1)
-    // } else {
-    //     chart
-    //         .barPadding(0.5)
-    // }
-    chart.groupBars(groupBars);
-    btn.text("groupBars() = " + groupBars);
-    chart.redraw();
+function toggleGroupBars(chartName){
+    var groupBars;
+    if(chartName === 'chart1'){
+        groupBars = chart1.groupBars() ? false : true;
+        chart1.groupBars(groupBars);
+        chart1.redraw();
+    } else if(chartName === 'chart2'){
+        groupBars = chart2.groupBars() ? false : true;
+        chart2.groupBars(groupBars);
+        chart2.redraw();
+    } else if(chartName === 'chart3'){
+        groupBars = chart3.groupBars() ? false : true;
+        chart3.groupBars(groupBars);
+        chart3.redraw();
+    }
 }
 
 </script>
+</div>
 </body>
 </html>
