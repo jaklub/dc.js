@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>dc.js - Stacked Bar Example</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
+    <style>
+      .dc-chart g.chart-body {
+          clip-path: none;
+      }
+    </style>
+  </head>
+<body>
+
+<div class="container">
+<script type="text/javascript" src="header.js"></script>
+
+    <div id="test">
+        <strong>Ordinal chart</strong>
+        <div class="reset" style="visibility: hidden">selected: <span class="filter"></span>
+            <a href="javascript:chart.filterAll();dc.redrawAll();">reset</a>
+        </div>
+    </div>
+    <div>
+        <button id="toggleGroupBars" class="btn" onclick="toggleGroupBars()">groupBars() = true</button>
+    </div>
+
+    <script type="text/javascript" src="../js/d3.js"></script>
+    <script type="text/javascript" src="../js/crossfilter.js"></script>
+    <script type="text/javascript" src="../js/dc.js"></script>
+    <script type="text/javascript">
+
+      var chart = dc.barChart("#test");
+      d3.csv("morley.csv").then(function(experiments) {
+
+        experiments = experiments.filter(function(v){
+            return parseInt(v.Run) <= 4;
+        });
+
+          experiments.forEach(function(x) {
+            //   x.Speed = +x.Speed;
+              x.Speed = parseInt(x.Expt) * 1 + parseInt(x.Run) * 10;
+          });
+
+          var ndx                 = crossfilter(experiments),
+              runDimension        = ndx.dimension(function(d) {return +d.Run;}),
+              speedSumGroup       = runDimension.group().reduce(function(p, v) {
+                  p[v.Expt] = (p[v.Expt] || 0) + v.Speed;
+                  return p;
+              }, function(p, v) {
+                  p[v.Expt] = (p[v.Expt] || 0) - v.Speed;
+                  return p;
+              }, function() {
+                  return {};
+              });
+
+          function sel_stack(i) {
+              return function(d) {
+                  return d.value[i];
+              };
+          }
+
+          chart
+            .width(768)
+            .height(480)
+            // .x(d3.scaleLinear().domain([1,6]))
+            .x(d3.scaleBand())
+            .xUnits(dc.units.ordinal)
+            .margins({left: 80, top: 20, right: 10, bottom: 20})
+            .brushOn(false)
+            // .brushOn(true)
+            .clipPadding(10)
+            .title(function(d) {
+                return d.key + '[' + this.layer + ']: ' + d.value[this.layer];
+            })
+            .yAxisPadding('5%')
+            .dimension(runDimension)
+            .group(speedSumGroup, "1", sel_stack('1'))
+            .renderLabel(true);
+
+          chart.legend(dc.legend());
+
+          dc.override(chart, 'legendables', function() {
+              var items = chart._legendables();
+              return items.reverse();
+          });
+
+          for(var i = 2; i<6; ++i)
+              chart.stack(speedSumGroup, ''+i, sel_stack(i));
+          chart.render();
+
+      });
+
+    function toggleGroupBars(arg1, arg2, arg3){
+        // console.log('toggleGroupBars');
+        var btn = d3.select('#toggleGroupBars');
+        var groupBars = chart.groupBars() ? false : true;
+        chart.groupBars(groupBars);
+        btn.text("groupBars() = " + groupBars);
+        chart.redraw();
+    }
+
+    </script>
+
+</div>
+  </body>
+</html>

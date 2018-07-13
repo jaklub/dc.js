@@ -47,6 +47,30 @@ div.dc-chart {
             fill: $color_celeste;
         }
     }
+    g.bar-group{
+        cursor: pointer;
+        rect {
+            &.bar {
+                stroke: none;
+                cursor: pointer;
+                &:hover {
+                    fill-opacity: 1;
+                }
+            }
+            &.deselected {
+                stroke: none;
+                fill: $color_celeste;
+            }
+        }
+        &.hoover {
+            rect.bar {
+                fill-opacity: .5;
+            }
+            rect.group-bar {
+                fill-opacity: 0;
+            }
+        }
+    }
     .pie-slice {
         fill: $color_white;
         font-size: 12px;
