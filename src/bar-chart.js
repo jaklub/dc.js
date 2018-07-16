@@ -30,7 +30,7 @@ dc.barChart = function (parent, chartGroup) {
     var DEFAULT_GAP_BETWEEN_BAR_GROUPS = 10;
     var LABEL_PADDING = 3;
     var DEFAULT_SENSOR_BAR = true;
-    var DEFAULT_SENSOR_BAR_COLOR = "#fffff";
+    var DEFAULT_SENSOR_BAR_COLOR = '#fffff';
     var DEFAULT_SENSOR_BAR_OPACITY = 0.1;
 
     var _chart = dc.stackMixin(dc.coordinateGridMixin({}));
@@ -54,18 +54,14 @@ dc.barChart = function (parent, chartGroup) {
 
         if (_chart.groupBars()) {
             var nuberOfBarsInGroup = _chart.stack().length,
-                xUnits = _chart.xUnitCount(),
                 xAxistStepLength,
-                groupIndex = d.groupIndex, // !!! TODO !!! Get the layer index somhow
-                // groupX = d.groupX,
+                groupIndex = d.groupIndex,
                 offset;
-
-            // x = _chart.x()(groupX);
 
             x += groupIndex * (_barWidth + _barPadding);
             if (_chart.isOrdinal()) {
                 xAxistStepLength = _chart.x().step();
-                offset = xAxistStepLength - _chart.x().bandwidth()
+                offset = xAxistStepLength - _chart.x().bandwidth();
 
                 x += _chart.groupGap() / 2;
                 x += _barPadding / 2;
@@ -73,10 +69,6 @@ dc.barChart = function (parent, chartGroup) {
             } else if (!_chart.isOrdinal() && _centerBar) {
                 x -= (_barWidth + _barPadding) * nuberOfBarsInGroup / 2;
                 x += _barPadding / 2;
-            }
-
-            if (d.x ==  1 && ( groupIndex == -1 || groupIndex == 0) ){
-                // console.log("x = ", x, "_chart.x()(d.x) = ", _chart.x()(d.x), ", d.x = ", d.x, ", groupIndex = ", groupIndex);
             }
 
         } else {
@@ -105,37 +97,9 @@ dc.barChart = function (parent, chartGroup) {
     }
 
     function sensorBarXPos (d) {
-        var x = _chart.x()(d.x),
-                offset = 0;
-            // nuberOfBarsInGroup = _chart.stack().length,
-            // xUnits = _chart.xUnitCount(),
-        //     xAxistStepLength,
-        //     // groupIndex = d.groupIndex,
-        //     offset = 0;
+        var x = _chart.x()(d.x);
 
-        // if(_chart.isOrdinal()){
-        //     xAxistStepLength = _chart.x().step();
-        //     offset = xAxistStepLength - _chart.x().bandwidth();
-        // } else {
-
-        // }
-
-        // if (_chart.groupBars()) {
-        //     x += _chart.groupGap() / 2;
-        // } else {
-        //     x += _chart.groupGap() / 2;
-        //     // x += _barPadding / 2;
-        //     // if (_centerBar) {
-        //     //     x -= _barWidth / 2;
-        //     // }
-        //     // if (_chart.isOrdinal() && _gap !== undefined) {
-        //     //     x += _gap / 2;
-        //     // }
-        // }
-
-        // x -= offset / 2;
-
-        if(_chart.isOrdinal()){
+        if (_chart.isOrdinal()) {
             x += _barPadding / 2;
         }
         if (!_chart.isOrdinal() && _centerBar) {
@@ -144,10 +108,6 @@ dc.barChart = function (parent, chartGroup) {
 
         if(_chart.isOrdinal() && _groupBars){
             x += _chart.groupGap() / 2;
-        }
-
-        if (d.x == 1 ){
-            console.log("sensorBarXPos, x = ", x, "_chart.x()(d.x) = ", _chart.x()(d.x), ", d.x = ", d.x, ", _chart.groupGap() = ", _chart.groupGap(), ", offset = ", offset);
         }
 
         return dc.utils.safeNumber(x);
@@ -199,12 +159,6 @@ dc.barChart = function (parent, chartGroup) {
                 sensorBarWidth = barWidth - barPadding;
             }
 
-            // if(_groupBars){
-            //     sensorBarPadding = _chart.groupGap();
-            // } else {
-            //     sensorBarPadding = barPadding / 2;
-            // }
-
 
             if (barWidth === Infinity || isNaN(barWidth) || barWidth < MIN_BAR_WIDTH) {
                 barWidth = MIN_BAR_WIDTH;
@@ -221,13 +175,12 @@ dc.barChart = function (parent, chartGroup) {
             _sensorBarWidth = dc.utils.safeNumber(sensorBarWidth - sensorBarPadding);
             _sensorBarPadding = dc.utils.safeNumber(sensorBarPadding);
 
-            //console.log("_barWidth = ", (_barWidth).toPrecision(4), ", _barPadding = ", (_barPadding).toPrecision(4), ", _sensorBarWidth = ", (_sensorBarWidth).toPrecision(4), ", _sensorBarPadding = ", (_sensorBarPadding).toPrecision(4));
         }
     }
 
     function renderBars (barGroup, barGroupIndex, d) {
         var bars,
-            barData = d.values,
+            barData = d.values;
     
         bars = barGroup.selectAll('rect.bar')
             .data(barData, dc.pluck('groupIndex'));
@@ -277,7 +230,7 @@ dc.barChart = function (parent, chartGroup) {
 
     function renderSensorBar (barGroup, barGroupIndex, d) {
         var bars,
-            barData = d.values,
+            barData = d.values;
     
         bars = barGroup.selectAll('rect.sensor-bar')
             .data(barData, dc.pluck('groupIndex'));
@@ -354,56 +307,66 @@ dc.barChart = function (parent, chartGroup) {
             sensorBarData = [];
 
         // Pivot the data, so that each item in the barData array contains all bars for the same x-point.
-        // Also add attribute groupIndex, wich indicates the bars order within the group. 
-        firstStack.values.forEach(function (d, i) {
-            var values = [];
-            for (var j = 0; j < chartData.length; j++) {
-                var value = chartData[j].values[i];
-                value.groupIndex = j;
-                values.push(value);
-            }
+        // Also add attribute groupIndex, wich indicates the bars order within the group.
+        if (chartData.length > 0) {
+            firstStack.values.forEach(function (d, i) {
+                var values = [];
+                for (var j = 0; j < chartData.length; j++) {
+                    var value = chartData[j].values[i];
+                    value.groupIndex = j;
+                    values.push(value);
+                }
 
-            barData.push({
-                'values': values
+                barData.push({
+                    'values': values
+                });
+                // create an array containing "sensor bars", one bar for each group of bars.
+                sensorBarData.push({
+                    'values': [{
+                        'x': d.x,
+                        'y': 0,
+                        'y0': 0,
+                        'y1': 0,
+                        'groupIndex': -1,
+                        'layer': d.layer,
+                        'data': {
+                            'key': d.data.key,
+                            'value': []
+                        }
+                    }]
+                });
             });
-            // create an array containing "sensor bars", one bar for each group of bars.
-            sensorBarData.push({
-                'values': [{
-                    'x': d.x,
-                    'y': 0,
-                    'y0': 0,
-                    'y1': 0,
-                    'groupIndex': -1,
-                    'layer': d.layer,
-                    'data': {
-                        'key': d.data.key,
-                        'value': []
-                    }
-                }]
+
+            var barGroups = _chart.chartBodyG().selectAll('g.bar-group')
+                .data(barData);
+
+            // var barGroups = _chart.chartBodyG().selectAll('g.bar-group')
+            //     .data(barData, dc.pluck('groupIndex'));
+
+
+            // barGroups = barGroups
+            var barGroupsEnter = barGroups.enter()
+                .append('g')
+                .attr('class', 'bar-group')
+                .merge(barGroups);
+
+            var barGroupsEnterUpdate = barGroupsEnter.merge(barGroups);
+
+            barGroups.exit()
+                .remove();
+
+            barGroupsEnter.each(function (d, i) {
+                var barGroup = d3.select(this);
+
+                renderSensorBar(barGroup, i, sensorBarData[i]);
+                renderBars(barGroup, i, d);
+
+                // if (_chart.renderLabel() && last === i) {
+                if (_chart.renderLabel()) {
+                    renderLabels(barGroup, i, d);
+                }
             });
-        });
-
-        var barGroups = _chart.chartBodyG().selectAll('g.bar-group')
-            .data(barData);
-
-        barGroups = barGroups
-            .enter()
-            .append('g')
-            .attr('class', 'bar-group')
-            .merge(barGroups);
-
-        var last = barGroups.size() - 1;
-        barGroups.each(function (d, i) {
-            var barGroup = d3.select(this);
-
-            renderSensorBar(barGroup, i, sensorBarData[i]);
-            renderBars(barGroup, i, d);
-
-            // if (_chart.renderLabel() && last === i) {
-            if (_chart.renderLabel()) {
-                renderLabels(barGroup, i, d);
-            }
-        });
+        }
     };
 
     function barHeight (d) {

@@ -320,9 +320,9 @@ describe('dc.barChart', function () {
                 expect(dc.logger.warn).toHaveBeenCalled();
 
                 expect(typeof chart.x().bandwidth).toEqual('function');
-                expect(nthStack(0).nthBar(0).attr('x')).toBeWithinDelta(16, 1);
-                expect(nthStack(0).nthBar(3).attr('x')).toBeWithinDelta(674, 1);
-                expect(nthStack(0).nthBar(5).attr('x')).toBeWithinDelta(509, 1);
+                expect(nthBarGroup(0).nthBar(0).attr('x')).toBeWithinDelta(16, 1);
+                expect(nthBarGroup(3).nthBar(0).attr('x')).toBeWithinDelta(674, 1);
+                expect(nthBarGroup(5).nthBar(0).attr('x')).toBeWithinDelta(509, 1);
             });
         });
 
@@ -351,9 +351,9 @@ describe('dc.barChart', function () {
             });
 
             it('should position bars based on linear range', function () {
-                expect(nthStack(0).nthBar(0).attr('x')).toBeWithinDelta(40, 1);
-                expect(nthStack(0).nthBar(2).attr('x')).toBeWithinDelta(489, 1);
-                expect(nthStack(0).nthBar(4).attr('x')).toBeWithinDelta(938, 1);
+                expect(nthBarGroup(0).nthBar(0).attr('x')).toBeWithinDelta(40, 1);
+                expect(nthBarGroup(2).nthBar(0).attr('x')).toBeWithinDelta(489, 1);
+                expect(nthBarGroup(4).nthBar(0).attr('x')).toBeWithinDelta(938, 1);
             });
 
             describe('with a custom click handler', function () {
@@ -366,7 +366,7 @@ describe('dc.barChart', function () {
                 });
                 it('clicking causes another dimension to be filtered', function () {
                     expect(dimension.top(Infinity).length).toEqual(10);
-                    var abar = chart.selectAll('rect.bar:nth-child(3)');
+                    var abar = chart.selectAll('g.bar-group:nth-child(3) rect.bar');
                     abar.on('click')(abar.datum());
                     expect(dimension.top(Infinity).length).toEqual(3);
                 });
@@ -396,35 +396,60 @@ describe('dc.barChart', function () {
                     expect(chart.y().domain()).toEqual([0, 152]);
                 });
 
-                it('should generate each stack using its associated group', function () {
-                    expect(nthStack(0).selectAll('rect.bar').size()).toBe(6);
-                    expect(nthStack(1).selectAll('rect.bar').size()).toBe(6);
-                    expect(nthStack(2).selectAll('rect.bar').size()).toBe(6);
+                it('should generate the correct number of bar groups', function () {
+                    expect(chart.selectAll('g.bar-group').size()).toBe(6);
                 });
 
-                it('should render the correct number of stacks', function () {
-                    expect(chart.selectAll('.stack').size()).toBe(3);
+                it('should render the correct number of bars in each bar group', function () {
+                    expect(nthBarGroup(0).selectAll('rect.bar').size()).toBe(3);
+                    expect(nthBarGroup(1).selectAll('rect.bar').size()).toBe(3);
+                    expect(nthBarGroup(2).selectAll('rect.bar').size()).toBe(3);
+                    expect(nthBarGroup(3).selectAll('rect.bar').size()).toBe(3);
+                    expect(nthBarGroup(4).selectAll('rect.bar').size()).toBe(3);
+                    expect(nthBarGroup(5).selectAll('rect.bar').size()).toBe(3);
                 });
 
-                it('should display one label for each stack', function () {
-                    expect(chart.selectAll('text.barLabel').size()).toBe(6);
+                it('should generate one label for each bar in bar group', function () {
+                    expect(nthBarGroup(0).selectAll('text.barLabel').size()).toBe(3);
+                    expect(nthBarGroup(1).selectAll('text.barLabel').size()).toBe(3);
+                    expect(nthBarGroup(2).selectAll('text.barLabel').size()).toBe(3);
+                    expect(nthBarGroup(3).selectAll('text.barLabel').size()).toBe(3);
+                    expect(nthBarGroup(4).selectAll('text.barLabel').size()).toBe(3);
+                    expect(nthBarGroup(5).selectAll('text.barLabel').size()).toBe(3);
                 });
 
-                it('should generate labels with total value of stack', function () {
-                    expect(nthStack(2).nthLabel(0).text()).toBe('48');
-                    expect(nthStack(2).nthLabel(3).text()).toBe('51');
-                    expect(nthStack(2).nthLabel(5).text()).toBe('92');
+                it('should generate empty labels for the lower bars in each bar group', function () {
+                    expect(nthBarGroup(0).nthLabel(0).text()).toBe('');
+                    expect(nthBarGroup(0).nthLabel(1).text()).toBe('');
+                    expect(nthBarGroup(1).nthLabel(0).text()).toBe('');
+                    expect(nthBarGroup(1).nthLabel(1).text()).toBe('');
+                    expect(nthBarGroup(2).nthLabel(0).text()).toBe('');
+                    expect(nthBarGroup(2).nthLabel(1).text()).toBe('');
+                    expect(nthBarGroup(3).nthLabel(0).text()).toBe('');
+                    expect(nthBarGroup(3).nthLabel(1).text()).toBe('');
+                    expect(nthBarGroup(4).nthLabel(0).text()).toBe('');
+                    expect(nthBarGroup(4).nthLabel(1).text()).toBe('');
+                    expect(nthBarGroup(5).nthLabel(0).text()).toBe('');
+                    expect(nthBarGroup(5).nthLabel(1).text()).toBe('');
+
+                });
+
+                it('should generate labels with total value of stack on the top bar of each bar group', function () {
+                    expect(nthBarGroup(0).nthLabel(2).text()).toBe('48');
+                    expect(nthBarGroup(3).nthLabel(2).text()).toBe('51');
+                    expect(nthBarGroup(5).nthLabel(2).text()).toBe('92');
                 });
 
                 it('should stack the bars', function () {
-                    expect(+nthStack(0).nthBar(2).attr('y')).toBe(142);
-                    expect(+nthStack(0).nthBar(4).attr('y')).toBe(144);
+                    expect(+nthBarGroup(2).nthBar(0).attr('y')).toBe(142);
+                    expect(+nthBarGroup(4).nthBar(0).attr('y')).toBe(144);
 
-                    expect(+nthStack(1).nthBar(2).attr('y')).toBe(3);
-                    expect(+nthStack(1).nthBar(4).attr('y')).toBe(86);
+                    expect(+nthBarGroup(2).nthBar(1).attr('y')).toBe(3);
+                    expect(+nthBarGroup(4).nthBar(1).attr('y')).toBe(86);
 
-                    expect(+nthStack(2).nthBar(2).attr('y')).toBe(0);
-                    expect(+nthStack(2).nthBar(4).attr('y')).toBe(83);
+                    expect(+nthBarGroup(2).nthBar(2).attr('y')).toBe(0);
+                    expect(+nthBarGroup(4).nthBar(2).attr('y')).toBe(83);
+
                 });
 
                 it('should have its own title accessor', function () {
@@ -476,14 +501,14 @@ describe('dc.barChart', function () {
                         });
 
                         it('should hide the stack', function () {
-                            expect(nthStack(0).nthBar(0).attr('height')).toBe('52');
-                            expect(nthStack(0).nthBar(1).attr('height')).toBe('78');
+                            expect(nthBarGroup(0).nthBar(0).attr('height')).toBe('52');
+                            expect(nthBarGroup(1).nthBar(0).attr('height')).toBe('78');
                         });
 
                         it('should show the stack', function () {
                             chart.showStack('stack 0').render();
-                            expect(nthStack(0).nthBar(0).attr('height')).toBe('1');
-                            expect(nthStack(0).nthBar(1).attr('height')).toBe('6');
+                            expect(nthBarGroup(0).nthBar(0).attr('height')).toBe('1');
+                            expect(nthBarGroup(1).nthBar(0).attr('height')).toBe('6');
                         });
                     });
 
@@ -494,14 +519,14 @@ describe('dc.barChart', function () {
                         });
 
                         it('should hide the stack', function () {
-                            expect(nthStack(1).nthBar(0).attr('height')).toBe('24');
-                            expect(nthStack(1).nthBar(1).attr('height')).toBe('24');
+                            expect(nthBarGroup(0).nthBar(1).attr('height')).toBe('24');
+                            expect(nthBarGroup(1).nthBar(1).attr('height')).toBe('24');
                         });
 
                         it('should show the stack', function () {
                             chart.showStack('stack 1').render();
-                            expect(nthStack(1).nthBar(0).attr('height')).toBe('46');
-                            expect(nthStack(1).nthBar(1).attr('height')).toBe('70');
+                            expect(nthBarGroup(0).nthBar(1).attr('height')).toBe('46');
+                            expect(nthBarGroup(1).nthBar(1).attr('height')).toBe('70');
                         });
 
                         it('should still show the title for a visible stack', function () {
@@ -555,31 +580,31 @@ describe('dc.barChart', function () {
                 });
 
                 it('should generate negative bars for stack 0', function () {
-                    expect(nthStack(0).nthBar(0).attr('x')).toBeWithinDelta(58, 1);
-                    expect(nthStack(0).nthBar(0).attr('y')).toBeWithinDelta(73, 1);
-                    expect(nthStack(0).nthBar(0).attr('height')).toBeWithinDelta(8, 1);
+                    expect(nthBarGroup(0).nthBar(0).attr('x')).toBeWithinDelta(58, 1);
+                    expect(nthBarGroup(0).nthBar(0).attr('y')).toBeWithinDelta(73, 1);
+                    expect(nthBarGroup(0).nthBar(0).attr('height')).toBeWithinDelta(8, 1);
 
-                    expect(nthStack(0).nthBar(3).attr('x')).toBeWithinDelta(492, 1);
-                    expect(nthStack(0).nthBar(3).attr('y')).toBeWithinDelta(73, 1);
-                    expect(nthStack(0).nthBar(3).attr('height')).toBeWithinDelta(6, 1);
+                    expect(nthBarGroup(3).nthBar(0).attr('x')).toBeWithinDelta(492, 1);
+                    expect(nthBarGroup(3).nthBar(0).attr('y')).toBeWithinDelta(73, 1);
+                    expect(nthBarGroup(3).nthBar(0).attr('height')).toBeWithinDelta(6, 1);
 
-                    expect(nthStack(0).nthBar(5).attr('x')).toBeWithinDelta(961, 1);
-                    expect(nthStack(0).nthBar(5).attr('y')).toBeWithinDelta(67, 1);
-                    expect(nthStack(0).nthBar(5).attr('height')).toBeWithinDelta(6, 1);
+                    expect(nthBarGroup(5).nthBar(0).attr('x')).toBeWithinDelta(961, 1);
+                    expect(nthBarGroup(5).nthBar(0).attr('y')).toBeWithinDelta(67, 1);
+                    expect(nthBarGroup(5).nthBar(0).attr('height')).toBeWithinDelta(6, 1);
                 });
 
                 it('should generate negative bar for stack 1', function () {
-                    expect(nthStack(1).nthBar(0).attr('x')).toBeWithinDelta(58, 1);
-                    expect(nthStack(1).nthBar(0).attr('y')).toBeWithinDelta(81, 1);
-                    expect(nthStack(1).nthBar(0).attr('height')).toBeWithinDelta(7, 1);
+                    expect(nthBarGroup(0).nthBar(1).attr('x')).toBeWithinDelta(58, 1);
+                    expect(nthBarGroup(0).nthBar(1).attr('y')).toBeWithinDelta(81, 1);
+                    expect(nthBarGroup(0).nthBar(1).attr('height')).toBeWithinDelta(7, 1);
 
-                    expect(nthStack(1).nthBar(3).attr('x')).toBeWithinDelta(492, 1);
-                    expect(nthStack(1).nthBar(3).attr('y')).toBeWithinDelta(79, 1);
-                    expect(nthStack(1).nthBar(3).attr('height')).toBeWithinDelta(5, 1);
+                    expect(nthBarGroup(3).nthBar(1).attr('x')).toBeWithinDelta(492, 1);
+                    expect(nthBarGroup(3).nthBar(1).attr('y')).toBeWithinDelta(79, 1);
+                    expect(nthBarGroup(3).nthBar(1).attr('height')).toBeWithinDelta(5, 1);
 
-                    expect(nthStack(1).nthBar(5).attr('x')).toBeWithinDelta(961, 1);
-                    expect(nthStack(1).nthBar(5).attr('y')).toBeWithinDelta(61, 1);
-                    expect(nthStack(1).nthBar(5).attr('height')).toBeWithinDelta(6, 1);
+                    expect(nthBarGroup(5).nthBar(1).attr('x')).toBeWithinDelta(961, 1);
+                    expect(nthBarGroup(5).nthBar(1).attr('y')).toBeWithinDelta(61, 1);
+                    expect(nthBarGroup(5).nthBar(1).attr('height')).toBeWithinDelta(6, 1);
                 });
 
                 it('should generate y axis domain dynamically', function () {
@@ -786,13 +811,13 @@ describe('dc.barChart', function () {
                 });
 
                 it('should push unselected bars to the background', function () {
-                    expect(nthStack(0).nthBar(0).classed('deselected')).toBeTruthy();
-                    expect(nthStack(0).nthBar(1).classed('deselected')).toBeFalsy();
-                    expect(nthStack(0).nthBar(3).classed('deselected')).toBeTruthy();
+                    expect(nthBarGroup(0).nthBar(0).classed('deselected')).toBeTruthy();
+                    expect(nthBarGroup(1).nthBar(0).classed('deselected')).toBeFalsy();
+                    expect(nthBarGroup(3).nthBar(0).classed('deselected')).toBeTruthy();
                 });
 
                 it('should push the selected bars to the foreground', function () {
-                    expect(nthStack(0).nthBar(1).classed('deselected')).toBeFalsy();
+                    expect(nthBarGroup(1).nthBar(0).classed('deselected')).toBeFalsy();
                 });
 
                 describe('after reset', function () {
@@ -888,8 +913,8 @@ describe('dc.barChart', function () {
         });
         it('should not overlap bars', function () {
             var x = numAttr('x'), wid = numAttr('width');
-            expect(x(nthStack(0).nthBar(0)) + wid(nthStack(0).nthBar(0)))
-                .toBeLessThan(x(nthStack(0).nthBar(1)));
+            expect(x(nthBarGroup(0).nthBar(0)) + wid(nthBarGroup(0).nthBar(0)))
+                .toBeLessThan(x(nthBarGroup(1).nthBar(0)));
         });
     });
 
@@ -1355,9 +1380,15 @@ describe('dc.barChart', function () {
         };
     }
 
+    // function checkBarOverlap (n) {
+    //     var x = numAttr('x'), wid = numAttr('width');
+    //     expect(x(nthStack(0).nthBar(n)) + wid(nthStack(0).nthBar(n)))
+    //         .toBeLessThan(x(nthStack(0).nthBar(n + 1)));
+    // }
+
     function checkBarOverlap (n) {
         var x = numAttr('x'), wid = numAttr('width');
-        expect(x(nthStack(0).nthBar(n)) + wid(nthStack(0).nthBar(n)))
-            .toBeLessThan(x(nthStack(0).nthBar(n + 1)));
+        expect(x(nthBarGroup(n).nthBar(0)) + wid(nthBarGroup(n).nthBar(0)))
+            .toBeLessThan(x(nthBarGroup(n + 1).nthBar(0)));
     }
 });

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>dc.js - Bar Chart Example</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
+</head>
+<body>
+
+<div class="container">
+<script type="text/javascript" src="header.js"></script>
+<div id="test-content"></div>
+
+<script type="text/javascript" src="../js/d3.js"></script>
+<script type="text/javascript" src="../js/crossfilter.js"></script>
+<script type="text/javascript" src="../js/dc.js"></script>
+<script type="text/javascript">
+d3.csv("morley.csv").then(function(experiments ) {
+    var id, chart, data, dateDimension, dateValueSumGroup, dateValueNegativeSumGroup,
+        dateIdSumGroup, dateIdNegativeSumGroup, dateGroup;
+
+    data = crossfilter(loadDateFixture());
+    dateDimension = data.dimension(function (d) { return d3.utcDay(d.dd); });
+    dateValueSumGroup = dateDimension.group().reduceSum(function (d) { return d.value; });
+    dateValueNegativeSumGroup = dateDimension.group().reduceSum(function (d) { return -d.value; });
+    dateIdSumGroup = dateDimension.group().reduceSum(function (d) { return d.id; });
+    dateIdNegativeSumGroup = dateDimension.group().reduceSum(function (d) { return -d.id; });
+    dateGroup = dateDimension.group();
+
+    id = 'composite-chart';
+    appendChartID(id);
+
+    chart = dc.compositeChart('#' + id);
+    chart
+        .dimension(dateDimension)
+        .group(dateIdSumGroup)
+        .width(500)
+        .height(150)
+        .x(d3.scaleUtc().domain([makeDate(2012, 4, 20), makeDate(2012, 7, 15)]))
+        .transitionDuration(0)
+        .xUnits(d3.utcDays)
+        .shareColors(true)
+        .compose([
+            dc.barChart(chart)
+                .centerBar(true)
+                .group(dateValueSumGroup, 'Date Value Group Bar')
+                .gap(1),
+            dc.lineChart(chart)
+                .group(dateIdSumGroup, 'Date ID Group')
+                .stack(dateValueSumGroup, 'Date Value Group Line 1')
+                .stack(dateValueSumGroup, 'Date Value Group Line 2')
+                .hidableStacks(true),
+            dc.lineChart(chart)
+                .group(dateGroup, 'Date Group')
+        ]);
+
+    chart.render();
+
+
+
+    // chart.children()[0].on('renderlet', function (chart) {
+    //     chart.selectAll('rect.bar').attr('width', function (d) {
+    //         return 10;
+    //     });
+    // });
+    // chart.render();
+
+    window.chart = chart;
+
+});
+
+
+// <!-- 
+
+//   dc.compositeChart
+//     rendering the chart
+//       should generate sub bar charts                                                                  ✖    ✖
+//       should render sub bar chart                                                                     ✖    ✖
+//     subchart renderlets
+//       should trigger the sub-chart renderlet                                                          ✖    ✖
+
+// -->
+
+
+function loadDateFixture () {
+    var fixture = JSON.parse("[" +
+        "{\"value\":\"44\",\"nvalue\":\"-4\",\"countrycode\":\"US\",\"state\":\"California\",\"status\":\"T\",\"id\":1,\"region\":\"South\",\"date\":\"2012-05-25T16:10:09Z\"}, " +
+        "{\"value\":\"22\",\"nvalue\":\"-2\",\"countrycode\":\"US\",\"state\":\"Colorado\",\"status\":\"F\",\"id\":2,\"region\":\"West\",\"date\":\"2012-06-10T16:10:19Z\"}, " +
+        "{\"value\":\"33\",\"nvalue\":\"1\",\"countrycode\":\"US\",\"state\":\"Delaware\",\"status\":\"T\",\"id\":3,\"region\":\"West\",\"date\":\"2012-08-10T16:20:29Z\"}, " +
+        "{\"value\":\"44\",\"nvalue\":\"-3\",\"countrycode\":\"US\",\"state\":\"California\",\"status\":\"F\",\"id\":4,\"region\":\"South\",\"date\":\"2012-07-01T16:10:39Z\"}, " +
+        "{\"value\":\"55\",\"nvalue\":\"-5\",\"countrycode\":\"CA\",\"state\":\"Ontario\",\"status\":\"T\",\"id\":5,\"region\":\"Central\",\"date\":\"2012-06-10T16:10:49Z\"}, " +
+        "{\"value\":\"66\",\"nvalue\":\"-4\",\"countrycode\":\"US\",\"state\":\"California\",\"status\":\"F\",\"id\":6,\"region\":\"West\",\"date\":\"2012-06-08T16:10:59Z\"}, " +
+        "{\"value\":\"22\",\"nvalue\":\"10\",\"countrycode\":\"CA\",\"state\":\"Ontario\",\"status\":\"T\",\"id\":7,\"region\":\"East\",\"date\":\"2012-07-10T16:10:09Z\"}, " +
+        "{\"value\":\"33\",\"nvalue\":\"1\",\"countrycode\":\"US\",\"state\":\"Mississippi\",\"status\":\"F\",\"id\":8,\"region\":\"Central\",\"date\":\"2012-07-10T16:10:19Z\"}, " +
+        "{\"value\":\"44\",\"nvalue\":\"2\",\"countrycode\":\"US\",\"state\":\"Mississippi\",\"status\":\"T\",\"id\":9,\"region\":\"Central\",\"date\":\"2012-08-10T16:30:29Z\"}, " +
+        "{\"value\":\"55\",\"nvalue\":\"-3\",\"countrycode\":\"US\",\"state\":\"Oklahoma\",\"status\":\"F\",\"id\":10,\"region\":\"\",\"date\":\"2012-06-10T16:10:39Z\"}" +
+        "]");
+
+    fixture.forEach(dateCleaner);
+    return fixture;
+}
+
+// use UTC dates because these tests will be run in many time zones
+function makeDate (year, month, day) {
+    if (typeof year === 'string' || arguments.length !== 3) {
+        throw new Error('makeDate takes year, month, day');
+    }
+    return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+}
+
+function appendChartID (id) {
+    return d3.select('#test-content').append('div').attr('id', id);
+}
+
+/* jscs:disable validateQuoteMarks, maximumLineLength */
+/* jshint -W109, -W101, -W098 */
+function dateCleaner (e) {
+    e.dd = d3.isoParse(e.date);
+}
+
+
+function nthStack (n) {
+    var stack = d3.select(chart.selectAll('.stack').nodes()[n]);
+
+    stack.nthBar = function (n) {
+        return d3.select(this.selectAll('rect.bar').nodes()[n]);
+    };
+
+    stack.nthLabel = function (n) {
+        return d3.select(this.selectAll('text.barLabel').nodes()[n]);
+    };
+
+    stack.forEachBar = function (assertions) {
+        this.selectAll('rect.bar').each(function (d) {
+            assertions(d3.select(this), d);
+        });
+    };
+
+    return stack;
+}
+
+function nthBarGroup (n) {
+    var stack = d3.select(chart.selectAll('.bar-group').nodes()[n]);
+
+    stack.nthBar = function (n) {
+        return d3.select(this.selectAll('rect.bar').nodes()[n]);
+    };
+
+    stack.nthLabel = function (n) {
+        return d3.select(this.selectAll('text.barLabel').nodes()[n]);
+    };
+
+    stack.forEachBar = function (assertions) {
+        this.selectAll('rect.bar').each(function (d) {
+            assertions(d3.select(this), d);
+        });
+    };
+
+    return stack;
+}
+
+</script>
+
+</div>
+</body>
+</html>
+
+

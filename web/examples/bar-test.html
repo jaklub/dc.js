@@ -52,35 +52,170 @@ d3.csv("morley.csv").then(function(experiments ) {
 
     // chart.render();
 
-    var stateDimension;
+    // var stateDimension;
 
 
-    stateDimension = data.dimension(function (d) { return d.state; });
-    var stateGroup = stateDimension.group();
-    var ordinalDomainValues = ['California', 'Colorado', 'Delaware', 'Ontario', 'Mississippi', 'Oklahoma'];
+    // stateDimension = data.dimension(function (d) { return d.state; });
+    // var stateGroup = stateDimension.group();
+    // var ordinalDomainValues = ['California', 'Colorado', 'Delaware', 'Ontario', 'Mississippi', 'Oklahoma'];
 
-    chart.rescale(); // BUG: barWidth cannot change after initial rendering
+    // chart.rescale(); // BUG: barWidth cannot change after initial rendering
 
-    chart.dimension(stateDimension)
-        .group(stateGroup)
-        .xUnits(dc.units.ordinal)
-        .x(d3.scaleBand().domain(ordinalDomainValues))
-        .barPadding(0)
-        .outerPadding(0.1)
-        .render();
+    // chart.dimension(stateDimension)
+    //     .group(stateGroup)
+    //     .xUnits(dc.units.ordinal)
+    //     .x(d3.scaleBand().domain(ordinalDomainValues))
+    //     .barPadding(0)
+    //     .outerPadding(0.1)
+    //     .render();
+
+
+    // var linearDimension = data.dimension(function (d) { return +d.value; });
+    // var linearGroup = linearDimension.group();
+
+    // chart.rescale(); // BUG: barWidth cannot change after initial rendering
+
+    // chart.dimension(linearDimension)
+    //     .group(linearGroup)
+    //     .xUnits(dc.units.integers)
+    //     .x(d3.scaleLinear().domain([20, 70]))
+    //     .render(); 
+
+
+    // chart.brushOn(false)
+    //     .on('renderlet', function (_chart) {
+    //         _chart.selectAll('rect.bar').on('click', _chart.onClick);
+    //     })
+    //     .render();
+
+
+    // var idGroup = dimension.group().reduceSum(function (d) { return d.id; });
+    // var sumGroup = dimension.group().reduceSum(function (d) { return d.value; });
+
+    // chart
+    //     .brushOn(false)
+    //     .x(d3.scaleUtc().domain([makeDate(2012, 4, 20), makeDate(2012, 7, 15)]))
+    //     .group(idGroup, 'stack 0')
+    //     .title('stack 0', function (d) { 
+    //         return 'stack 0: ' + d.value; 
+    //     })
+    //     .stack(sumGroup, 'stack 1')
+    //     .title('stack 1', function (d) { 
+    //         return 'stack 1: ' + d.value; 
+    //     })
+    //     .stack(sumGroup, 'stack 2', function (d) { 
+    //         return 3; 
+    //     })
+    //     .elasticY(true)
+    //     .renderLabel(true)
+    //     .render();
+
+    // chart.hideStack('stack 0').render();
+
+    // chart.title('stack 2', function (d) { 
+    //     return 'stack 2: ' + d.value; 
+    // });
+    // chart.hideStack('stack 1').render();
+
+    // chart
+    //     .hideStack('stack 0')
+    //     .hideStack('stack 1')
+    //     .hideStack('stack 2')
+    //     .render();
+
+    // var mixedGroup = dimension.group().reduceSum(function (d) { return d.nvalue; });
+
+    // chart.group(mixedGroup).stack(mixedGroup).stack(mixedGroup);
+    // chart.x(d3.scaleUtc().domain([makeDate(2012, 4, 20), makeDate(2012, 7, 15)]));
+
+    // chart.margins({top: 30, right: 50, bottom: 30, left: 30})
+    //     .yAxisPadding(5)
+    //     .elasticY(true)
+    //     .xUnits(d3.utcDays)
+    //     .yAxis().ticks(5);
+
+    // chart.rescale(); // BUG: barWidth cannot change after initial rendering
+
+    // chart.render();
+
+    // chart.elasticY(true).gap(1).xUnits(d3.utcDays);
+    // chart.focus([makeDate(2012, 5, 11), makeDate(2012, 6, 9)]);
+
+
+    // var rows = [];
+    // rows.push({State: 'CA', 'Population': 2704659});
+    // rows.push({State: 'TX', 'Population': 1827307});
+    // data = crossfilter(rows);
+    // dimension  = data.dimension(dc.pluck('State'));
+    // group = dimension.group().reduceSum(dc.pluck('Population'));
+
+    // chart = dc.barChart('#' + id);
+    // chart.xUnits(dc.units.ordinal)
+    //     .x(d3.scaleBand())
+    //     .transitionDuration(0)
+    //     .dimension(dimension)
+    //     .group(group, 'Population');
+    // chart.render();
+
+
+        var rows = [{
+            name: 'Venezuela',
+            sale: 300
+        }, {
+            name: 'Saudi',
+            sale: 253
+        }, {
+            name: 'Canada',
+            sale: 150
+        }, {
+            name: 'Iran',
+            sale: 125
+        }, {
+            name: 'Russia',
+            sale: 110
+        }, {
+            name: 'UAE',
+            sale: 90
+        }, {
+            name: 'US',
+            sale: 40
+        }, {
+            name: 'China',
+            sale: 37
+        }];
+        data = crossfilter(rows);
+        dimension  = data.dimension(function (d) {
+            return d.name;
+        });
+        group = dimension.group().reduceSum(function (d) {
+            return d.sale;
+        });
+        chart = dc.barChart('#' + id);
+        chart.transitionDuration(0)
+            .outerPadding(0)
+            .dimension(dimension)
+            .group(group)
+            .x(d3.scaleBand())
+            .xUnits(dc.units.ordinal);
+        chart.render();
 
     window.chart = chart;
     window.dimension = dimension;
 
-
 });
 
+
 // <!-- 
-//   dc.barChart
-//     rendering
-//       with an ordinal x domain
-//         clicking
-//           causes other dimension to be filtered                                                       ✖    ✖ -->
+
+//   dc.compositeChart
+//     rendering the chart
+//       should generate sub bar charts                                                                  ✖    ✖
+//       should render sub bar chart                                                                     ✖    ✖
+//     subchart renderlets
+//       should trigger the sub-chart renderlet                                                          ✖    ✖
+
+// -->
+
 
 function loadDateFixture () {
     var fixture = JSON.parse("[" +
