@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>dc.js - Bar Chart Example</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
+</head>
+<body>
+
+<div class="container">
+<script type="text/javascript" src="header.js"></script>
+<div id="bar-chart"></div>
+
+<script type="text/javascript" src="../js/d3.js"></script>
+<script type="text/javascript" src="../js/crossfilter.js"></script>
+<script type="text/javascript" src="../js/dc.js"></script>
+<script type="text/javascript">
+d3.csv("morley.csv").then(function(experiments ) {
+    var id, chart, data;
+    var dimension, group;
+
+    data = crossfilter(loadDateFixture());
+    dimension = data.dimension(function (d) { return d3.utcDay(d.dd); });
+    group = dimension.group();
+
+    id = 'bar-chart';
+    appendChartID(id);
+
+    chart = dc.barChart('#' + id);
+    chart.dimension(dimension).group(group)
+        .width(1100).height(200)
+        .x(d3.scaleUtc().domain([makeDate(2012, 0, 1), makeDate(2012, 11, 31)]))
+        .transitionDuration(0)
+        .controlsUseVisibility(true)
+        .renderLabel(true)
+
+    chart.render();
+
+    // chart.rescale(); // BUG: barWidth cannot change after initial rendering
+
+    // var domain = [makeDate(2012, 4, 20), makeDate(2012, 7, 15)];
+
+    // chart.x(d3.scaleUtc().domain(domain))
+    //     .group(dimension.group().reduceSum(function (d) {
+    //         return +d.nvalue;
+    //     }))
+    //     .elasticY(true)
+    //     .centerBar(false)
+    //     .xUnits(d3.utcDays)
+    //     .yAxis().ticks(5);
+
+    // chart.render();
+
+    var stateDimension;
+
+
+    stateDimension = data.dimension(function (d) { return d.state; });
+    var stateGroup = stateDimension.group();
+    var ordinalDomainValues = ['California', 'Colorado', 'Delaware', 'Ontario', 'Mississippi', 'Oklahoma'];
+
+    chart.rescale(); // BUG: barWidth cannot change after initial rendering
+
+    chart.dimension(stateDimension)
+        .group(stateGroup)
+        .xUnits(dc.units.ordinal)
+        .x(d3.scaleBand().domain(ordinalDomainValues))
+        .barPadding(0)
+        .outerPadding(0.1)
+        .render();
+
+    window.chart = chart;
+    window.dimension = dimension;
+
+
+});
+
+// <!-- 
+//   dc.barChart
+//     rendering
+//       with an ordinal x domain
+//         clicking
+//           causes other dimension to be filtered                                                       ✖    ✖ -->
+
+function loadDateFixture () {
+    var fixture = JSON.parse("[" +
+        "{\"value\":\"44\",\"nvalue\":\"-4\",\"countrycode\":\"US\",\"state\":\"California\",\"status\":\"T\",\"id\":1,\"region\":\"South\",\"date\":\"2012-05-25T16:10:09Z\"}, " +
+        "{\"value\":\"22\",\"nvalue\":\"-2\",\"countrycode\":\"US\",\"state\":\"Colorado\",\"status\":\"F\",\"id\":2,\"region\":\"West\",\"date\":\"2012-06-10T16:10:19Z\"}, " +
+        "{\"value\":\"33\",\"nvalue\":\"1\",\"countrycode\":\"US\",\"state\":\"Delaware\",\"status\":\"T\",\"id\":3,\"region\":\"West\",\"date\":\"2012-08-10T16:20:29Z\"}, " +
+        "{\"value\":\"44\",\"nvalue\":\"-3\",\"countrycode\":\"US\",\"state\":\"California\",\"status\":\"F\",\"id\":4,\"region\":\"South\",\"date\":\"2012-07-01T16:10:39Z\"}, " +
+        "{\"value\":\"55\",\"nvalue\":\"-5\",\"countrycode\":\"CA\",\"state\":\"Ontario\",\"status\":\"T\",\"id\":5,\"region\":\"Central\",\"date\":\"2012-06-10T16:10:49Z\"}, " +
+        "{\"value\":\"66\",\"nvalue\":\"-4\",\"countrycode\":\"US\",\"state\":\"California\",\"status\":\"F\",\"id\":6,\"region\":\"West\",\"date\":\"2012-06-08T16:10:59Z\"}, " +
+        "{\"value\":\"22\",\"nvalue\":\"10\",\"countrycode\":\"CA\",\"state\":\"Ontario\",\"status\":\"T\",\"id\":7,\"region\":\"East\",\"date\":\"2012-07-10T16:10:09Z\"}, " +
+        "{\"value\":\"33\",\"nvalue\":\"1\",\"countrycode\":\"US\",\"state\":\"Mississippi\",\"status\":\"F\",\"id\":8,\"region\":\"Central\",\"date\":\"2012-07-10T16:10:19Z\"}, " +
+        "{\"value\":\"44\",\"nvalue\":\"2\",\"countrycode\":\"US\",\"state\":\"Mississippi\",\"status\":\"T\",\"id\":9,\"region\":\"Central\",\"date\":\"2012-08-10T16:30:29Z\"}, " +
+        "{\"value\":\"55\",\"nvalue\":\"-3\",\"countrycode\":\"US\",\"state\":\"Oklahoma\",\"status\":\"F\",\"id\":10,\"region\":\"\",\"date\":\"2012-06-10T16:10:39Z\"}" +
+        "]");
+
+    fixture.forEach(dateCleaner);
+    return fixture;
+}
+
+// use UTC dates because these tests will be run in many time zones
+function makeDate (year, month, day) {
+    if (typeof year === 'string' || arguments.length !== 3) {
+        throw new Error('makeDate takes year, month, day');
+    }
+    return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+}
+
+function appendChartID (id) {
+    return d3.select('#test-content').append('div').attr('id', id);
+}
+
+/* jscs:disable validateQuoteMarks, maximumLineLength */
+/* jshint -W109, -W101, -W098 */
+function dateCleaner (e) {
+    e.dd = d3.isoParse(e.date);
+}
+
+
+function nthStack (n) {
+    var stack = d3.select(chart.selectAll('.stack').nodes()[n]);
+
+    stack.nthBar = function (n) {
+        return d3.select(this.selectAll('rect.bar').nodes()[n]);
+    };
+
+    stack.nthLabel = function (n) {
+        return d3.select(this.selectAll('text.barLabel').nodes()[n]);
+    };
+
+    stack.forEachBar = function (assertions) {
+        this.selectAll('rect.bar').each(function (d) {
+            assertions(d3.select(this), d);
+        });
+    };
+
+    return stack;
+}
+
+function nthBarGroup (n) {
+    var stack = d3.select(chart.selectAll('.bar-group').nodes()[n]);
+
+    stack.nthBar = function (n) {
+        return d3.select(this.selectAll('rect.bar').nodes()[n]);
+    };
+
+    stack.nthLabel = function (n) {
+        return d3.select(this.selectAll('text.barLabel').nodes()[n]);
+    };
+
+    stack.forEachBar = function (assertions) {
+        this.selectAll('rect.bar').each(function (d) {
+            assertions(d3.select(this), d);
+        });
+    };
+
+    return stack;
+}
+
+</script>
+
+</div>
+</body>
+</html>
+
+

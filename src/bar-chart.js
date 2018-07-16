@@ -208,6 +208,12 @@ dc.barChart = function (parent, chartGroup) {
 
             if (barWidth === Infinity || isNaN(barWidth) || barWidth < MIN_BAR_WIDTH) {
                 barWidth = MIN_BAR_WIDTH;
+                barPadding = 0;
+            }
+
+            if (sensorBarWidth === Infinity || isNaN(sensorBarWidth) || sensorBarWidth < MIN_BAR_WIDTH) {
+                sensorBarWidth = MIN_BAR_WIDTH;
+                sensorBarPadding = 0;
             }
 
             _barWidth = dc.utils.safeNumber(barWidth - barPadding);

@@ -77,17 +77,17 @@ describe('dc.barChart', function () {
             });
 
             it('should generate labels with positions corresponding to their data', function () {
-                expect(nthStack(0).nthLabel(0).attr('x')).toBeWithinDelta(405, 1);
-                expect(nthStack(0).nthLabel(0).attr('y')).toBeWithinDelta(104, 1);
-                expect(nthStack(0).nthLabel(0).text()).toBe('1');
+                expect(nthBarGroup(0).nthLabel(0).attr('x')).toBeWithinDelta(405, 1);
+                expect(nthBarGroup(0).nthLabel(0).attr('y')).toBeWithinDelta(104, 1);
+                expect(nthBarGroup(0).nthLabel(0).text()).toBe('1');
 
-                expect(nthStack(0).nthLabel(3).attr('x')).toBeWithinDelta(509, 1);
-                expect(nthStack(0).nthLabel(3).attr('y')).toBeWithinDelta(104, 1);
-                expect(nthStack(0).nthLabel(3).text()).toBe('1');
+                expect(nthBarGroup(3).nthLabel(0).attr('x')).toBeWithinDelta(509, 1);
+                expect(nthBarGroup(3).nthLabel(0).attr('y')).toBeWithinDelta(104, 1);
+                expect(nthBarGroup(3).nthLabel(0).text()).toBe('1');
 
-                expect(nthStack(0).nthLabel(5).attr('x')).toBeWithinDelta(620, 1);
-                expect(nthStack(0).nthLabel(5).attr('y')).toBeWithinDelta(50, 1);
-                expect(nthStack(0).nthLabel(5).text()).toBe('2');
+                expect(nthBarGroup(5).nthLabel(0).attr('x')).toBeWithinDelta(620, 1);
+                expect(nthBarGroup(5).nthLabel(0).attr('y')).toBeWithinDelta(50, 1);
+                expect(nthBarGroup(5).nthLabel(0).text()).toBe('2');
             });
         });
 
@@ -150,17 +150,17 @@ describe('dc.barChart', function () {
                 return d3.select(chart.selectAll('g.y text').nodes()[n]);
             }
             it('should generate bars with positions corresponding to their data', function () {
-                expect(nthStack(0).nthBar(0).attr('x')).toBeWithinDelta(58, 1);
-                expect(nthStack(0).nthBar(0).attr('y')).toBeWithinDelta(84, 1);
-                expect(nthStack(0).nthBar(0).attr('height')).toBeWithinDelta(30, 1);
+                expect(nthBarGroup(0).nthBar(0).attr('x')).toBeWithinDelta(58, 1);
+                expect(nthBarGroup(0).nthBar(0).attr('y')).toBeWithinDelta(84, 1);
+                expect(nthBarGroup(0).nthBar(0).attr('height')).toBeWithinDelta(30, 1);
 
-                expect(nthStack(0).nthBar(3).attr('x')).toBeWithinDelta(492, 1);
-                expect(nthStack(0).nthBar(3).attr('y')).toBeWithinDelta(84, 1);
-                expect(nthStack(0).nthBar(3).attr('height')).toBeWithinDelta(23, 1);
+                expect(nthBarGroup(3).nthBar(0).attr('x')).toBeWithinDelta(492, 1);
+                expect(nthBarGroup(3).nthBar(0).attr('y')).toBeWithinDelta(84, 1);
+                expect(nthBarGroup(3).nthBar(0).attr('height')).toBeWithinDelta(23, 1);
 
-                expect(nthStack(0).nthBar(5).attr('x')).toBeWithinDelta(961, 1);
-                expect(nthStack(0).nthBar(5).attr('y')).toBeWithinDelta(61, 1);
-                expect(nthStack(0).nthBar(5).attr('height')).toBeWithinDelta(23, 1);
+                expect(nthBarGroup(5).nthBar(0).attr('x')).toBeWithinDelta(961, 1);
+                expect(nthBarGroup(5).nthBar(0).attr('y')).toBeWithinDelta(61, 1);
+                expect(nthBarGroup(5).nthBar(0).attr('height')).toBeWithinDelta(23, 1);
             });
 
             it('should generate the y-axis domain dynamically', function () {
@@ -203,16 +203,16 @@ describe('dc.barChart', function () {
             });
 
             it('should position the bar based on the ordinal range', function () {
-                expect(nthStack(0).nthBar(0).attr('x')).toBeWithinDelta(16, 1);
-                expect(nthStack(0).nthBar(3).attr('x')).toBeWithinDelta(674, 1);
-                expect(nthStack(0).nthBar(5).attr('x')).toBeWithinDelta(509, 1);
+                expect(nthBarGroup(0).nthBar(0).attr('x')).toBeWithinDelta(16, 1);
+                expect(nthBarGroup(3).nthBar(0).attr('x')).toBeWithinDelta(674, 1);
+                expect(nthBarGroup(5).nthBar(0).attr('x')).toBeWithinDelta(509, 1);
             });
 
             it('should fade deselected bars', function () {
                 chart.filter('Ontario').filter('Colorado').redraw();
-                expect(nthStack(0).nthBar(0).classed('deselected')).toBeTruthy();
-                expect(nthStack(0).nthBar(1).classed('deselected')).toBeFalsy();
-                expect(nthStack(0).nthBar(5).classed('deselected')).toBeFalsy();
+                expect(nthBarGroup(0).nthBar(0).classed('deselected')).toBeTruthy();
+                expect(nthBarGroup(1).nthBar(0).classed('deselected')).toBeFalsy();
+                expect(nthBarGroup(5).nthBar(0).classed('deselected')).toBeFalsy();
                 expect(stateDimension.top(Infinity).length).toBe(3);
             });
 
@@ -220,9 +220,9 @@ describe('dc.barChart', function () {
                 // Note that bar chart works differently from pie chart.  The bar objects (the
                 // actual DOM nodes) don't get reordered by the custom ordering, but they are
                 // placed so that they are drawn in the order specified.
-                var ontarioXPos = nthStack(0).nthBar(5).attr('x');
-                var mississippiXPos = nthStack(0).nthBar(3).attr('x');
-                var oklahomaXPos = nthStack(0).nthBar(4).attr('x');
+                var ontarioXPos = nthBarGroup(5).nthBar(0).attr('x');
+                var mississippiXPos = nthBarGroup(3).nthBar(0).attr('x');
+                var oklahomaXPos = nthBarGroup(4).nthBar(0).attr('x');
 
                 expect(ontarioXPos).toBeLessThan(mississippiXPos);
                 expect(mississippiXPos).toBeLessThan(oklahomaXPos);
@@ -264,9 +264,9 @@ describe('dc.barChart', function () {
                 });
 
                 it('should position bars based on ordinal range', function () {
-                    expect(nthStack(0).nthBar(0).attr('height')).toBe('1600');
-                    expect(nthStack(0).nthBar(1).attr('height')).toBe('1600');
-                    expect(nthStack(0).nthBar(2).attr('height')).toBe('1600');
+                    expect(nthBarGroup(0).nthBar(0).attr('height')).toBe('1600');
+                    expect(nthBarGroup(1).nthBar(0).attr('height')).toBe('1600');
+                    expect(nthBarGroup(2).nthBar(0).attr('height')).toBe('1600');
                 });
             });
 
@@ -274,7 +274,7 @@ describe('dc.barChart', function () {
                 it('causes other dimension to be filtered', function () {
                     expect(dimension.top(Infinity).length).toEqual(10);
                     // fake a click
-                    var abar = chart.selectAll('rect.bar:nth-child(3)');
+                    var abar = chart.selectAll('g.bar-group:nth-child(3) rect.bar');
                     abar.on('click')(abar.datum());
                     expect(dimension.top(Infinity).length).toEqual(1);
                 });
@@ -1304,6 +1304,26 @@ describe('dc.barChart', function () {
 
     function nthStack (n) {
         var stack = d3.select(chart.selectAll('.stack').nodes()[n]);
+
+        stack.nthBar = function (n) {
+            return d3.select(this.selectAll('rect.bar').nodes()[n]);
+        };
+
+        stack.nthLabel = function (n) {
+            return d3.select(this.selectAll('text.barLabel').nodes()[n]);
+        };
+
+        stack.forEachBar = function (assertions) {
+            this.selectAll('rect.bar').each(function (d) {
+                assertions(d3.select(this), d);
+            });
+        };
+
+        return stack;
+    }
+
+    function nthBarGroup (n) {
+        var stack = d3.select(chart.selectAll('.bar-group').nodes()[n]);
 
         stack.nthBar = function (n) {
             return d3.select(this.selectAll('rect.bar').nodes()[n]);
