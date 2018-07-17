@@ -34,25 +34,11 @@ div.dc-chart {
 }
 
 .dc-chart {
-    rect {
-        &.bar {
-            stroke: none;
-            cursor: pointer;
-            &:hover {
-                fill-opacity: .5;
-            }
-        }
-        &.deselected {
-            stroke: none;
-            fill: $color_celeste;
-        }
-    }
     g.bar-group{
         cursor: pointer;
         rect {
             &.bar {
                 stroke: none;
-                cursor: pointer;
                 &:hover {
                     fill-opacity: 1;
                 }
@@ -65,9 +51,6 @@ div.dc-chart {
         &.hoover {
             rect.bar {
                 fill-opacity: .5;
-            }
-            rect.group-bar {
-                fill-opacity: 0;
             }
         }
     }
