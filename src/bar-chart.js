@@ -280,6 +280,8 @@ dc.barChart = function (parent, chartGroup) {
         _chart._rescale();
         _barWidth = undefined;
         _barPadding = undefined;
+        _sensorBarWidth = undefined;
+        _sensorBarPadding = undefined;
         return _chart;
     });
 
@@ -558,12 +560,13 @@ dc.barChart = function (parent, chartGroup) {
      * @return {Boolean|dc.barChart}
      */
     _chart.groupBars = function (groupBars) {
-        // _barWidth = undefined;
         if (!arguments.length) {
             return _groupBars;
         }
         _barWidth = undefined;
         _barPadding = undefined;
+        _sensorBarWidth = undefined;
+        _sensorBarPadding = undefined;
         _groupBars = groupBars;
         return _chart;
     };
