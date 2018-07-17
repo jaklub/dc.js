@@ -5,15 +5,17 @@
 div.dc-chart {
   float: left; }
 
-.dc-chart rect.bar {
-  stroke: none;
+.dc-chart g.bar-group {
   cursor: pointer; }
-  .dc-chart rect.bar:hover {
+  .dc-chart g.bar-group rect.bar {
+    stroke: none; }
+    .dc-chart g.bar-group rect.bar:hover {
+      fill-opacity: 1; }
+  .dc-chart g.bar-group rect.deselected {
+    stroke: none;
+    fill: #ccc; }
+  .dc-chart g.bar-group.hoover rect.bar {
     fill-opacity: .5; }
-
-.dc-chart rect.deselected {
-  stroke: none;
-  fill: #ccc; }
 
 .dc-chart .pie-slice {
   fill: #fff;
@@ -194,6 +196,9 @@ div.dc-chart {
   .dc-chart .empty-chart .pie-slice path {
     fill: #fee;
     cursor: default; }
+
+.dc-chart circle.dot {
+  stroke: none; }
 
 .dc-data-count {
   float: right;

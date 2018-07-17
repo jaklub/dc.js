@@ -11,7 +11,7 @@ such as [.svg](#dc.baseMixin+svg) and [.xAxis](#dc.coordinateGridMixin+xAxis),
 return values that are themselves chainable d3 objects.
 
 **Kind**: global namespace  
-**Version**: 3.0.6  
+**Version**: 3.0.6-grouped-or-stacked  
 **Example**  
 ```js
 // Example chaining
@@ -54,6 +54,11 @@ chart.width(300)
         * [.externalLabels([externalLabelRadius])](#dc.sunburstChart+externalLabels) ⇒ <code>Number</code> \| [<code>sunburstChart</code>](#dc.sunburstChart)
     * [.barChart](#dc.barChart)
         * [new barChart(parent, [chartGroup])](#new_dc.barChart_new)
+        * [.groupBars](#dc.barChart+groupBars) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
+        * [.groupGap](#dc.barChart+groupGap) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
+        * [.sensorBars](#dc.barChart+sensorBars) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
+        * [.sensorBarColor](#dc.barChart+sensorBarColor) ⇒ <code>String</code> \| [<code>barChart</code>](#dc.barChart)
+        * [.sensorBarOpacity](#dc.barChart+sensorBarOpacity) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
         * [.centerBar([centerBar])](#dc.barChart+centerBar) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
         * [.barPadding([barPadding])](#dc.barChart+barPadding) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
         * [.outerPadding([padding])](#dc.barChart+outerPadding) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
@@ -801,6 +806,11 @@ The argument specifies the extra radius to be added for slice labels.
 
 * [.barChart](#dc.barChart)
     * [new barChart(parent, [chartGroup])](#new_dc.barChart_new)
+    * [.groupBars](#dc.barChart+groupBars) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
+    * [.groupGap](#dc.barChart+groupGap) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
+    * [.sensorBars](#dc.barChart+sensorBars) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
+    * [.sensorBarColor](#dc.barChart+sensorBarColor) ⇒ <code>String</code> \| [<code>barChart</code>](#dc.barChart)
+    * [.sensorBarOpacity](#dc.barChart+sensorBarOpacity) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
     * [.centerBar([centerBar])](#dc.barChart+centerBar) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
     * [.barPadding([barPadding])](#dc.barChart+barPadding) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
     * [.outerPadding([padding])](#dc.barChart+outerPadding) ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
@@ -831,6 +841,66 @@ var chart2 = dc.barChart('#chart-container2', 'chartGroupA');
 // create a sub-chart under a composite parent chart
 var chart3 = dc.barChart(compositeChart);
 ```
+<a name="dc.barChart+groupBars"></a>
+
+#### barChart.groupBars ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
+Group bars instead of stacking them. By default bars added through the stack function is stacked
+on top of each other. By setting groupedBars = true, the bars will instead be placed next to each other.
+Use groupGap and barPadding to adjust the spacing between bars and group of bars.
+
+**Kind**: instance property of [<code>barChart</code>](#dc.barChart)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [groupBars] | <code>Boolean</code> | <code>false</code> | 
+
+<a name="dc.barChart+groupGap"></a>
+
+#### barChart.groupGap ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
+Manually set fixed gap (in px) between bar groups instead of relying on the default auto-generated
+gap.  Only applicable for grouped bar charts.
+
+**Kind**: instance property of [<code>barChart</code>](#dc.barChart)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [groupGap] | <code>Number</code> | <code>5</code> | 
+
+<a name="dc.barChart+sensorBars"></a>
+
+#### barChart.sensorBars ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
+Set or get whether sensor bars is enabled. Sensor bars is placed behind the normal bars or groups of bars
+but has the same height as the chart. This enables selection of bars by hovering or clicking above them
+in the chart. Useful for instance when some of the bars are relativly short.
+
+**Kind**: instance property of [<code>barChart</code>](#dc.barChart)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [sensorBars] | <code>Boolean</code> | <code>true</code> | 
+
+<a name="dc.barChart+sensorBarColor"></a>
+
+#### barChart.sensorBarColor ⇒ <code>String</code> \| [<code>barChart</code>](#dc.barChart)
+Set or get the fill color of the sensor bars
+
+**Kind**: instance property of [<code>barChart</code>](#dc.barChart)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [sensorBarColor] | <code>String</code> | <code>&quot;#fffff&quot;</code> | 
+
+<a name="dc.barChart+sensorBarOpacity"></a>
+
+#### barChart.sensorBarOpacity ⇒ <code>Number</code> \| [<code>barChart</code>](#dc.barChart)
+Set or get the fill color of the sensor bars
+
+**Kind**: instance property of [<code>barChart</code>](#dc.barChart)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [sensorBarOpacity] | <code>Number</code> | <code>0</code> | 
+
 <a name="dc.barChart+centerBar"></a>
 
 #### barChart.centerBar([centerBar]) ⇒ <code>Boolean</code> \| [<code>barChart</code>](#dc.barChart)
